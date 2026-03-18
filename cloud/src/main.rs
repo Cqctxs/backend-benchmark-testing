@@ -1,6 +1,5 @@
-use actix_web::{get, App, HttpResponse, HttpServer, Responder};
+use actix_web::{App, HttpResponse, HttpServer, Responder, get};
 use rusqlite::{Connection, Result};
-use serde::Serialize;
 use std::time::Instant;
 
 // 1. REAL DATABASE RETRIEVAL (SQLite Disk I/O)
@@ -8,12 +7,12 @@ use std::time::Instant;
 fn fetch_users_from_db() -> Result<Vec<usize>> {
     // 1. Explicitly point to the src folder
     // Alternatively, move database.sqlite to your main /cloud/ folder
-    let path = "src/database.sqlite"; 
+    let path = "src/database.sqlite";
 
     let conn = Connection::open(path)?;
 
-    // 2. We use a real query. 
-    // If the table 'users' doesn't exist, this will now throw an error 
+    // 2. We use a real query.
+    // If the table 'users' doesn't exist, this will now throw an error
     // instead of returning 0.
     let mut stmt = conn.prepare("SELECT id FROM users")?;
     let user_iter = stmt.query_map([], |row| row.get(0))?;
@@ -37,19 +36,25 @@ fn gale_shapley_mock(users: Vec<usize>) -> usize {
     let n = users.len();
     let mut matches_made = 0;
 
-    // Outer loop: Proposers (O(n))
+    // SIMULATING PREFERENCE CALCULATION
+    // In a real app, this is O(n^2 * k) where k is number of interests
     for _proposer in 0..n {
-        // Inner loop: Reviewing preferences (O(n))
         for _receiver in 0..n {
-            // Simulate matching logic / preference checking
-            let is_match = true; 
-            if is_match {
+            // We simulate checking 5 interests and 3 hardships per pair
+            let mut score = 0;
+            for _interest in 0..5 {
+                score += 1; // Simulate an "interest match" check
+            }
+            for _hardship in 0..3 {
+                score += 1; // Simulate a "hardship match" check
+            }
+
+            // Only "match" if the simulated score is high enough
+            if score > 2 {
                 matches_made += 1;
-                break; // Move to next proposer once matched
             }
         }
     }
-    // Total time complexity: O(n^2) in the worst case
     matches_made
 }
 
@@ -71,7 +76,7 @@ async fn process_matches() -> impl Responder {
     let matches = gale_shapley_mock(users);
 
     // 2. Use microseconds so your Measure of Success isn't "0"
-    let duration = start_time.elapsed().as_micros(); 
+    let duration = start_time.elapsed().as_micros();
 
     HttpResponse::Ok().json(serde_json::json!({
         "status": "Success",
@@ -85,10 +90,8 @@ async fn process_matches() -> impl Responder {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("Starting Actix Web server on port 8080...");
-    HttpServer::new(|| {
-        App::new().service(process_matches)
-    })
-    .bind(("0.0.0.0", 8080))? // 0.0.0.0 allows external access from your EC2
-    .run()
-    .await
+    HttpServer::new(|| App::new().service(process_matches))
+        .bind(("0.0.0.0", 8080))? // 0.0.0.0 allows external access from your EC2
+        .run()
+        .await
 }
