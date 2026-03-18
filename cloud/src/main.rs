@@ -3,37 +3,28 @@ use rusqlite::{Connection, Result};
 use serde::Serialize;
 use std::time::Instant;
 
-// Data structure for the response
-#[derive(Serialize)]
-struct MatchResponse {
-    status: String,
-    matches_made: usize,
-    processing_time_ms: u128,
-}
+// 1. REAL DATABASE RETRIEVAL (SQLite Disk I/O)
+// This connects to the database.sqlite file you created with Python
+fn fetch_users_from_db() -> Result<Vec<usize>> {
+    // 1. Explicitly point to the src folder
+    // Alternatively, move database.sqlite to your main /cloud/ folder
+    let path = "src/database.sqlite"; 
 
-// 1. MOCK DATABASE RETRIEVAL (SQLite)
-// In a real app, this reads your user tables. Here, we create an in-memory 
-// SQLite DB to simulate the time it takes to execute a SQL query.
-fn fetch_users_from_db(n: usize) -> Result<Vec<usize>> {
-    let conn = Connection::open_in_memory()?;
-    
-    conn.execute(
-        "CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)",
-        (),
-    )?;
+    let conn = Connection::open(path)?;
 
-    // Insert mock users
-    for i in 0..n {
-        conn.execute("INSERT INTO users (name) VALUES (?1)", [&format!("User_{}", i)])?;
-    }
-
-    // Retrieve users (Simulating DB latency)
+    // 2. We use a real query. 
+    // If the table 'users' doesn't exist, this will now throw an error 
+    // instead of returning 0.
     let mut stmt = conn.prepare("SELECT id FROM users")?;
     let user_iter = stmt.query_map([], |row| row.get(0))?;
 
     let mut users = Vec::new();
     for user in user_iter {
-        users.push(user.unwrap());
+        users.push(user.expect("Failed to parse user ID"));
+    }
+
+    if users.is_empty() {
+        eprintln!("Warning: Database was opened, but the 'users' table is empty!");
     }
 
     Ok(users)
@@ -67,23 +58,27 @@ fn gale_shapley_mock(users: Vec<usize>) -> usize {
 #[get("/match")]
 async fn process_matches() -> impl Responder {
     let start_time = Instant::now();
-    let n_users = 100; // Testing with 100 users for O2 validation
 
-    // Step A: DB Retrieval
-    let users = fetch_users_from_db(n_users).unwrap_or_default();
+    // 1. Remove unwrap_or_default and handle the error properly
+    let users = match fetch_users_from_db() {
+        Ok(u) => u,
+        Err(e) => {
+            eprintln!("Database Error: {}", e);
+            return HttpResponse::InternalServerError().body(format!("DB Error: {}", e));
+        }
+    };
 
-    // Step B: Run Algorithm
     let matches = gale_shapley_mock(users);
 
-    // Step C: Calculate internal time (optional, good for debugging)
-    let duration = start_time.elapsed().as_millis();
+    // 2. Use microseconds so your Measure of Success isn't "0"
+    let duration = start_time.elapsed().as_micros(); 
 
-    // Return the HTTP JSON response
-    HttpResponse::Ok().json(MatchResponse {
-        status: "Success".to_string(),
-        matches_made: matches,
-        processing_time_ms: duration,
-    })
+    HttpResponse::Ok().json(serde_json::json!({
+        "status": "Success",
+        "users_found": matches, // helps us verify data was read
+        "matches_made": matches / 2, // simple simulation of pairs
+        "processing_time_micros": duration,
+    }))
 }
 
 // 4. SERVER LAUNCH
