@@ -36,7 +36,7 @@ class MatchApp:
         self.supabase_key = os.environ.get("SUPABASE_KEY")
         self.supabase: Client = create_client(self.supabase_url, self.supabase_key)
 
-    @modal.web_endpoint(method="GET")
+    @modal.fastapi_endpoint(method="GET")
     def match(self):
         # Start high-precision timer
         start_time = time.perf_counter_ns()
@@ -45,7 +45,7 @@ class MatchApp:
             # 4. Execute the matching logic in Supabase using the cached client
             result = self.supabase.rpc(
                 "match_users_by_id",
-                {"p_user_id": 1, "match_threshold": 0.5, "match_count": 50},
+                {"p_user_id": 1, "match_threshold": 0.01, "match_count": 100},
             ).execute()
 
             # Calculate duration in microseconds
