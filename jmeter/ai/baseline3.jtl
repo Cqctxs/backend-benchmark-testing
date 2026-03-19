@@ -1,0 +1,11 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1773960427407,495,HTTP Request,200,OK,Baseline Test 1-1,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,492,0,279
+1773960428326,427,HTTP Request,200,OK,Baseline Test 1-2,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,427,0,54
+1773960429326,239,HTTP Request,200,OK,Baseline Test 1-3,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,239,0,50
+1773960430325,326,HTTP Request,200,OK,Baseline Test 1-4,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,326,0,52
+1773960431325,194,HTTP Request,200,OK,Baseline Test 1-5,text,true,,287,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,194,0,50
+1773960432324,342,HTTP Request,200,OK,Baseline Test 1-6,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,342,0,50
+1773960433324,197,HTTP Request,200,OK,Baseline Test 1-7,text,true,,287,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,197,0,49
+1773960434324,337,HTTP Request,200,OK,Baseline Test 1-8,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,337,0,49
+1773960435323,206,HTTP Request,200,OK,Baseline Test 1-9,text,true,,287,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,206,0,49
+1773960436324,331,HTTP Request,200,OK,Baseline Test 1-10,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,331,0,49

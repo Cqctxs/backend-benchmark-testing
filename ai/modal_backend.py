@@ -26,7 +26,7 @@ supabase_secrets = modal.Secret.from_dict(
 
 
 # 2. Supabase Credentials
-# NOTE: Using a Modal App Class allows caching the Supabase client per container
+# Using a Modal App Class allows caching the Supabase client per container
 @app.cls(image=image, secrets=[supabase_secrets])
 class MatchApp:
     @modal.enter()
@@ -38,7 +38,7 @@ class MatchApp:
 
     @modal.fastapi_endpoint(method="GET")
     def match(self):
-        # Start high-precision timer
+        # Start timer
         start_time = time.perf_counter_ns()
 
         try:
