@@ -20,8 +20,8 @@ const server = http.createServer(async (req, res) => {
         "match_users_by_id",
         {
           p_user_id: simulatedUserId,
-          match_threshold: 0.5, // Only match if they are 50% similar
-          match_count: 50, // Return up to 50 matches
+          match_threshold: 0.8, // Only match if they are 80% similar
+          match_count: 10, // Return up to 10 matches
         },
       );
 
