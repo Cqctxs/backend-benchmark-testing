@@ -17,10 +17,9 @@ fig.add_trace(
     go.Scatter(
         x=df.index * 1.0,
         y=df["rtt_ms"],
-        mode="lines+markers",
+        mode="lines",
         name=f"RTT (mean={mean_rtt}ms, P90={p90}ms)",
         line=dict(color="#e03131", width=2.5),
-        marker=dict(size=8),
     )
 )
 fig.add_hline(
@@ -29,6 +28,13 @@ fig.add_hline(
     line_color="gray",
     annotation_text=f"Mean {mean_rtt}ms",
     annotation_position="top right",
+)
+fig.add_hline(
+    y=p90,
+    line_dash="dot",
+    line_color="orange",
+    annotation_text=f"P90 {p90}ms",
+    annotation_position="top left",
 )
 
 fig.update_xaxes(title_text="Request #", tickfont=dict(size=13), showgrid=True)
