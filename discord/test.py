@@ -4,19 +4,31 @@ import time
 import csv
 import os
 import numpy as np
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # ── Environment Variables (set in Railway or locally before running) ──────────
-TESTER_TOKEN = os.environ["TESTER_TOKEN"]
-MATCHING_BOT_ID = int(os.environ["MATCHING_BOT_ID"])
+TESTER_TOKEN = os.environ["TEST_BOT_TOKEN"]
+MATCHING_BOT_ID = int(os.environ["MATCH_BOT_ID"])
 CHANNEL_IDS = [int(x) for x in os.environ["CHANNEL_IDS"].split(",")]
-TEST_MODE = os.environ.get("TEST_MODE", "baseline")  # 'baseline' or 'stress'
+TEST_MODE = os.environ.get("TEST_MODE", "stress")  # 'baseline' or 'stress'
 
 # ── Test Parameters ───────────────────────────────────────────────────────────
+TARGET_RATE_PER_SECOND = int(
+    os.environ.get("TARGET_RATE_PER_SECOND", "50")
+)  # Stay slightly below 50 to avoid global rate limits
 BASELINE_REQUESTS = 10
 BASELINE_INTERVAL = 1.0  # 1 req/s → 10 reqs over 10s, single channel
 
 STRESS_REQUESTS_PER_CHANNEL = 10
-STRESS_INTERVAL = 1.0  # 1 req/s × 50 channels = 500 req over 10s
+# Calculate interval dynamically based on number of channels and desired rate
+# Rate (req/sec) = 1 / (interval / len(CHANNEL_IDS))
+# interval = len(CHANNEL_IDS) / Rate
+if len(CHANNEL_IDS) > 0:
+    STRESS_INTERVAL = len(CHANNEL_IDS) / TARGET_RATE_PER_SECOND
+else:
+    STRESS_INTERVAL = 1.0
 
 # ── Shared State ──────────────────────────────────────────────────────────────
 pending = {}  # test_id (str) → send timestamp (perf_counter)
@@ -31,7 +43,8 @@ client = discord.Client(intents=intents)
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
-async def send_requests(channel, request_ids, interval):
+async def send_requests(channel, request_ids, interval, start_delay=0.0):
+    await asyncio.sleep(start_delay)  # ← stagger the initial burst
     for test_id in request_ids:
         pending[str(test_id)] = time.perf_counter()
         await channel.send(f"!match {test_id}")
@@ -134,13 +147,17 @@ async def run_stress():
                 )
             ),
             STRESS_INTERVAL,
+            start_delay=i
+            * (STRESS_INTERVAL / len(channels)),  # Evens out the rate perfectly
         )
         for i, ch in enumerate(channels)
     ]
     await asyncio.gather(*tasks)
 
+    # Calculate required timeout: num requests / rate per second + 15s buffer
+    total_time_s = (expected_count / TARGET_RATE_PER_SECOND) + 15
     try:
-        await asyncio.wait_for(all_done.wait(), timeout=30)
+        await asyncio.wait_for(all_done.wait(), timeout=total_time_s)
     except asyncio.TimeoutError:
         print(
             f"WARNING: Timed out waiting — only {len(results)}/{expected_count} responses received."

@@ -1,6 +1,7 @@
 import discord
 import psycopg2.pool
 import os
+import asyncio
 
 TOKEN = os.environ["BOT_TOKEN"]  # Set this in Railway Variables, never hardcode
 
@@ -12,6 +13,7 @@ db_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1, maxconn=10, dsn=os.environ["DATABASE_URL"]
 )
 
+
 def fetch_users_from_db():
     conn = db_pool.getconn()
     try:
@@ -22,8 +24,10 @@ def fetch_users_from_db():
     finally:
         db_pool.putconn(conn)  # always return connection to pool
 
+
 def match_mock(users):
     n = len(users)
+    matches_made = 0
     for _ in range(n):
         score = 0
         for _ in range(5):
@@ -48,8 +52,13 @@ async def on_message(message):
     if message.content.startswith("!match"):
         parts = message.content.split()
         test_id = parts[1] if len(parts) > 1 else "0"
-        users = fetch_users_from_db()
-        matches = match_mock(users)
+
+        # Run blocking operations in an executor to prevent blocking the event loop
+        loop = asyncio.get_event_loop()
+        users = await loop.run_in_executor(None, fetch_users_from_db)
+        matches = await loop.run_in_executor(None, match_mock, users)
+
         await message.channel.send(f"Success {test_id}: {matches} matches made.")
+
 
 client.run(TOKEN)

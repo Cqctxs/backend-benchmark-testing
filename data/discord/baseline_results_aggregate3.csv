@@ -1,0 +1,3 @@
+Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Std. Dev.
+Discord Bot,10,582,564,640,652,662,524,665,0.00%,49.52
+TOTAL,10,582,564,640,652,662,524,665,0.00%,49.52
