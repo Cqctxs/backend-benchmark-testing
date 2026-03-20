@@ -1,5 +1,5 @@
 import discord
-import psycopg2
+import psycopg2.pool
 import os
 
 TOKEN = os.environ["BOT_TOKEN"]  # Set this in Railway Variables, never hardcode
@@ -8,16 +8,19 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
+db_pool = psycopg2.pool.SimpleConnectionPool(
+    minconn=1, maxconn=10, dsn=os.environ["DATABASE_URL"]
+)
 
 def fetch_users_from_db():
-    # Railway injects DATABASE_URL automatically when PostgreSQL is added
-    conn = psycopg2.connect(os.environ["DATABASE_URL"])
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users")
-    users = [row[0] for row in cursor.fetchall()]
-    conn.close()
-    return users
-
+    conn = db_pool.getconn()
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM users")
+        users = [row[0] for row in cursor.fetchall()]
+        return users
+    finally:
+        db_pool.putconn(conn)  # always return connection to pool
 
 def match_mock(users):
     n = len(users)
@@ -48,6 +51,5 @@ async def on_message(message):
         users = fetch_users_from_db()
         matches = match_mock(users)
         await message.channel.send(f"Success {test_id}: {matches} matches made.")
-
 
 client.run(TOKEN)
