@@ -1,3 +1,11 @@
-Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Std. Dev.
-HTTP Request,10,46,44,47,47,67,43,67,0.00%,1.1,.2,6.95
-TOTAL,10,46,44,47,47,67,43,67,0.00%,1.1,.2,6.95
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1773877994228,67,HTTP Request,200,OK,Baseline Test 1-1,text,true,,197,121,1,1,http://54.159.81.233:8080/match,64,0,37
+1773877995155,44,HTTP Request,200,OK,Baseline Test 1-2,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,22
+1773877996154,44,HTTP Request,200,OK,Baseline Test 1-3,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,22
+1773877997154,44,HTTP Request,200,OK,Baseline Test 1-4,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,22
+1773877998154,43,HTTP Request,200,OK,Baseline Test 1-5,text,true,,197,121,1,1,http://54.159.81.233:8080/match,43,0,21
+1773877999154,44,HTTP Request,200,OK,Baseline Test 1-6,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,21
+1773878000154,44,HTTP Request,200,OK,Baseline Test 1-7,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,22
+1773878001153,44,HTTP Request,200,OK,Baseline Test 1-8,text,true,,197,121,1,1,http://54.159.81.233:8080/match,44,0,22
+1773878002153,43,HTTP Request,200,OK,Baseline Test 1-9,text,true,,197,121,1,1,http://54.159.81.233:8080/match,43,0,21
+1773878003154,47,HTTP Request,200,OK,Baseline Test 1-10,text,true,,197,121,1,1,http://54.159.81.233:8080/match,47,0,24

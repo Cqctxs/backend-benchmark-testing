@@ -1,3 +1,11 @@
-Label,# Samples,Average,Median,90% Line,95% Line,99% Line,Min,Max,Error %,Throughput,Received KB/sec,Std. Dev.
-HTTP Request,10,349,316,349,349,644,292,644,0.00%,1.1,.3,99.42
-TOTAL,10,349,316,349,349,644,292,644,0.00%,1.1,.3,99.42
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1773960518684,644,HTTP Request,200,OK,Baseline Test 1-1,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,640,0,279
+1773960519609,311,HTTP Request,200,OK,Baseline Test 1-2,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,311,0,53
+1773960520610,349,HTTP Request,200,OK,Baseline Test 1-3,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,349,0,52
+1773960521605,335,HTTP Request,200,OK,Baseline Test 1-4,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,335,0,51
+1773960522605,324,HTTP Request,200,OK,Baseline Test 1-5,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,324,0,51
+1773960523604,308,HTTP Request,200,OK,Baseline Test 1-6,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,308,0,51
+1773960524602,296,HTTP Request,200,OK,Baseline Test 1-7,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,296,0,51
+1773960525602,322,HTTP Request,200,OK,Baseline Test 1-8,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,322,0,54
+1773960526602,316,HTTP Request,200,OK,Baseline Test 1-9,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,316,0,51
+1773960527604,292,HTTP Request,200,OK,Baseline Test 1-10,text,true,,288,150,1,1,https://cqctxs--ai-matching-backend-matchapp-match.modal.run/,292,0,50
